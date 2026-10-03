@@ -1,0 +1,47 @@
+// OFA-SK: a Skript addon for skript-minestom that adds .sk syntax backed by OneForAll
+// (menus, events, player data, network variables).
+//
+// Everything is compileOnly: the server already provides skript-minestom, Minestom and
+// OneForAll on its classpath when it loads this jar from Skript/addons/, and shading them in
+// would put duplicate classes on the parent class loader.
+plugins {
+    id 'java'
+}
+
+group = 'net.honormc'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.hapily.me/releases' }  // minestom-sm
+    maven { url = 'https://maven.hapily.me/snapshots' } // skript-minestom (releases are published here)
+    mavenCentral()
+    maven { url = 'https://jitpack.io' }                // OneForAll
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' } // Adventure
+    maven { url = 'https://maven.conceptmc.com/releases' }             // skript-minestom's LuckPerms
+    maven { url = 'https://repo.hypera.dev/snapshots/' }               // skript-minestom's Spark
+    maven { url = 'https://repo.kenzie.mx/releases' }                  // mx.kenzie:mirror
+    maven { url = 'https://repo.lucko.me/' }                           // LuckPerms API
+}
+
+dependencies {
+    compileOnly "com.github.oneforall-mc.oneforall:oneforall-minestom:${oneforallVersion}"
+    compileOnly "com.github.hapily04.skriptminestom:minestom:${skriptMinestomVersion}"
+    compileOnly "net.minestom:minestom-sm:${minestomVersion}"
+}
+
+processResources {
+    inputs.property 'version', version
+    filesMatching('plugin.yml') {
+        expand version: version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

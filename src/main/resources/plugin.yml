@@ -1,0 +1,5 @@
+name: ofa-sk
+version: ${version}
+main: net.honormc.ofask.OFASkriptAddon
+softdepend: [Skript]
+api-version: 1.19

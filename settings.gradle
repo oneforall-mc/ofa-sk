@@ -1,0 +1,12 @@
+rootProject.name = 'ofa-sk'
+
+// Working on OneForAll at the same time? Keep a checkout at ../oneforall-api and this build
+// compiles against it instead of the JitPack release.
+if (file('../oneforall-api').isDirectory()) {
+    includeBuild('../oneforall-api') {
+        dependencySubstitution {
+            substitute module('com.github.oneforall-mc.oneforall:oneforall-minestom') using project(':oneforall-minestom')
+            substitute module('com.github.oneforall-mc.oneforall:oneforall-api') using project(':')
+        }
+    }
+}

@@ -1,11 +1,10 @@
 // OFA-SK: a Skript addon for skript-minestom that adds .sk syntax backed by OneForAll
 // (menus, events, player data, network variables).
 //
-// Everything is compileOnly: the server already provides skript-minestom, Minestom and
-// OneForAll on its classpath when it loads this jar from Skript/addons/, and shading them in
-// would put duplicate classes on the parent class loader.
+// The jar shades OneForAll (OFASK_00 Decision 1); skript-minestom and Minestom stay compileOnly.
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 group = 'net.honormc'
@@ -30,7 +29,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.github.oneforall-mc.oneforall:oneforall-minestom:${oneforallVersion}"
+    implementation("com.github.oneforall-mc.oneforall:oneforall-minestom:${oneforallVersion}") {
+        exclude group: 'net.kyori'
+        exclude group: 'com.google.code.gson'
+        exclude group: 'org.slf4j'
+    }
     compileOnly "com.github.hapily04.skriptminestom:minestom:${skriptMinestomVersion}"
     compileOnly "net.minestom:minestom-sm:${minestomVersion}"
 }
@@ -40,6 +43,20 @@ processResources {
     filesMatching('plugin.yml') {
         expand version: version
     }
+}
+
+jar {
+    archiveClassifier = 'plain'
+}
+
+shadowJar {
+    archiveClassifier = ''
+    mergeServiceFiles()
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/versions/*/module-info.class', 'module-info.class'
+}
+
+tasks.named('assemble') {
+    dependsOn shadowJar
 }
 
 tasks.withType(JavaCompile).configureEach {

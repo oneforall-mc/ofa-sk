@@ -2,6 +2,7 @@ package net.honormc.ofask;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import net.honormc.ofask.boot.OFABoot;
 import net.honormc.ofask.events.OFAEventBridge;
 import net.honormc.ofask.inventory.OFAInventoryClasses;
 import net.honormc.ofask.variables.NetworkVariables;
@@ -26,13 +27,16 @@ public class OFASkriptAddon extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        boolean ofa = OFABoot.start(getLogger());
         OFAInventoryClasses.register();
         try {
             getAddonInstance().loadClasses("net.honormc.ofask", "inventory", "events", "profile", "player");
         } catch (IOException e) {
             getLogger().severe("Failed to load ofa-sk syntax classes: " + e.getMessage());
         }
-        OFAEventBridge.install();
+        if (ofa) {
+            OFAEventBridge.install();
+        }
         // Must run here: Skript loads variables right after addons enable.
         NetworkVariables.install();
     }
@@ -40,6 +44,7 @@ public class OFASkriptAddon extends JavaPlugin {
     @Override
     public void onDisable() {
         OFAEventBridge.uninstall();
+        OFABoot.stop(getLogger());
     }
 
     public static OFASkriptAddon instance() {
